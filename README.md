@@ -8,3 +8,5 @@ Vous trouverez dans ce repo la base de donnée de notre projet de fin de deuxiè
 - truc bidule
 
 ### Schéma de notre API :
+
+![Diagramme_API_Biblio.png](Diagramme_API_Biblio.png)
