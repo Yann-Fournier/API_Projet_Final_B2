@@ -1,4 +1,8 @@
-﻿# API Projet Final B2 (avec Patchouf)
+﻿# To do List
+- Ajouter les requetes d'auth dans le schema
+- faire les codes des routes
+
+# API Projet Final B2 (avec Patchouf)
 
 Vous trouverez dans ce repo la base de donnée de notre projet de fin de deuxième année.
 
