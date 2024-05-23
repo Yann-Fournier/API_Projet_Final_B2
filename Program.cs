@@ -66,39 +66,40 @@ class Program
         // Recupération du token d'authentification -----------------------------------------------------------------------------------------------------------
         NameValueCollection auth = context.Request.Headers;
         string token = "";
+        dynamic truc = 10;
         int User_Id = -1;
-        bool Is_Admin = false
+        bool Is_Admin = false;
         try
         {
             token = auth["Authorization"].Replace("Bearer ", "");
-
-            data = SQLRequest.ExecuteQuery(connection, "SELECT Users.Id, Users.Is_Admin FROM Users JOIN Auth ON Users.Id = Auth.Id WHERE Auth.Token = '" + token + "';");
-            User_Id = data[0].Id;
-            Is_Admin = data[0].Is_Admin;
+            truc = SQLRequest.ExecuteQuery(connection, "SELECT Users.Id, Users.Is_Admin FROM Users JOIN Auth ON Users.Id = Auth.Id WHERE Auth.Token = '" + token + "';");
+            User_Id = truc[0].Id;
+            Is_Admin = truc[0].Is_Admin;
         }
         catch (Exception e)
         {
             pasOk = true;
         }
 
-
         // Exécution de la requête
         if (path == "") // Page d'acceuil, méthode http pas importante.
         {
             if (parameters.Count != 0)
             {
-                responseString = "They are too many parameters.";
+                data = "They are too many parameters.";
             }
             else
             {
-                responseString = "Hello! Welcome to the home page of this API. This is a project for our school. You can find the documentation at : https://github.com/Yann-Fournier/Projet_Final_B2.";
+                data = "Hello! Welcome to the home page of this API. This is a project for our school. You can find the documentation at : https://github.com/Yann-Fournier/Projet_Final_B2.";
             }
         }
         else if (context.Request.HttpMethod == "GET")
         {
             switch ((path, Is_Admin))
             {
-
+                case ("/auteur", true):
+                    data = SQLRequest.ExecuteQuery(connection, "SELECT * FROM Auteurs;");
+                    break;
             } 
         }
         else if (context.Request.HttpMethod == "POST")
@@ -110,7 +111,7 @@ class Program
         }
         else
         {
-            responseString = "404 - Not Found:\n\n   - Verify the request method\n   - Verify the url\n   - Verify the parameters\n   - Verify your token";
+            data = "404 - Not Found:\n\n   - Verify the request method\n   - Verify the url\n   - Verify the parameters\n   - Verify your token";
             context.Response.StatusCode = (int)HttpStatusCode.NotFound;
         }
 
@@ -119,11 +120,11 @@ class Program
             data = "404 - Not Found:\n\n   - Verify the request method\n   - Verify the url\n   - Verify the parameters\n   - Verify your token";
             context.Response.StatusCode = (int)HttpStatusCode.NotFound;
         } else {
-            string jsonString = JsonConvert.SerializeObject(data);
+            data = JsonConvert.SerializeObject(data);
         }
 
         // Envoie de la réponse.
-        byte[] buffer = Encoding.UTF8.GetBytes(jsonString);
+        byte[] buffer = Encoding.UTF8.GetBytes(data);
         context.Response.ContentLength64 = buffer.Length;
         Stream output = context.Response.OutputStream;
         output.Write(buffer, 0, buffer.Length);
