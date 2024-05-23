@@ -95,24 +95,21 @@ class Program
         }
         else if (context.Request.HttpMethod == "GET")
         {
-            switch ((path, Is_Admin))
+            switch (path)
             {
-                case ("/auteur", true):
-                    data = SQLRequest.ExecuteQuery(connection, "SELECT * FROM Auteurs;");
-                    break;
-            } 
+                
+            }
         }
         else if (context.Request.HttpMethod == "POST")
         {
-            switch ((path, Is_Admin))
+            switch (path)
             {
 
-            } 
+            }
         }
         else
         {
-            data = "404 - Not Found:\n\n   - Verify the request method\n   - Verify the url\n   - Verify the parameters\n   - Verify your token";
-            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            pasOk = true;
         }
 
         if (pasOk)

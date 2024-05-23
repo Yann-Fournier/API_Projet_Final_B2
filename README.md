@@ -1,6 +1,6 @@
 ﻿# To do List
 - Ajouter les requetes d'auth dans le schema
-- faire les codes des routes
+- faire les codes des routes (changer la valeur de pasOk pour les routes sans authentification pour (/livre, /user, /auteur, /categorie, /user/create))
 
 # API Projet Final B2 (avec Patchouf)
 
