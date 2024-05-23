@@ -1,8 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Collections.Specialized;
 using System.Security.Cryptography;
 using System.Text;
 using MySql.Data.MySqlClient;
 using System.Data.SQLite;
+using Newtonsoft.Json;
 
 namespace app;
 
@@ -30,17 +35,22 @@ public class SQLRequest
         return connection;
     }
 
-    public static string GetIdFromToken(SQLiteConnection connection, string query)
+    public static dynamic ExecuteQuery(SQLiteConnection connection, string query)
     {
-        string response = "";
-        SQLiteCommand command = new SQLiteCommand(query, connection);
-        SQLiteDataReader reader = command.ExecuteReader();
-        while (reader.Read())
+        DataTable dataTable = new DataTable();
+
+        using (SQLiteCommand command = new SQLiteCommand(query, connection))
+        using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(command))
         {
-            // Traitement des résultats de la requête SELECT
-            string s = $"{reader["Id"]}";
-            response = response + s;
+            adapter.Fill(dataTable);
         }
-        return response;
+
+        string jsonResult = ConvertDataTableToJson(dataTable);
+        return JsonConvert.DeserializeObject(jsonResult);
+    }
+
+    static string ConvertDataTableToJson(DataTable dataTable)
+    {
+        return JsonConvert.SerializeObject(dataTable, Formatting.Indented);
     }
 }

@@ -11,6 +11,7 @@
           "MySql.Data": "8.4.0",
           "MySqlClient": "5.5.1",
           "MySqlConnector": "2.3.0",
+          "Newtonsoft.Json": "13.0.3",
           "System.Data.SQLite": "1.0.118"
         },
         "runtime": {
@@ -187,6 +188,14 @@
           "lib/net8.0/MySqlConnector.dll": {
             "assemblyVersion": "2.0.0.0",
             "fileVersion": "2.3.0.0"
+          }
+        }
+      },
+      "Newtonsoft.Json/13.0.3": {
+        "runtime": {
+          "lib/net6.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "13.0.0.0",
+            "fileVersion": "13.0.3.27908"
           }
         }
       },
@@ -618,6 +627,13 @@
       "sha512": "sha512-CpW2vvPvqfjSR8MIhRTjoM7xoR3fzRbO4b8EAcjIfPv8/ecVmFItJkDmZ9wkHsiiL0XSUCOmxCmdYBEla616PQ==",
       "path": "mysqlconnector/2.3.0",
       "hashPath": "mysqlconnector.2.3.0.nupkg.sha512"
+    },
+    "Newtonsoft.Json/13.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ==",
+      "path": "newtonsoft.json/13.0.3",
+      "hashPath": "newtonsoft.json.13.0.3.nupkg.sha512"
     },
     "OptimizedDataReader/1.1.2": {
       "type": "package",

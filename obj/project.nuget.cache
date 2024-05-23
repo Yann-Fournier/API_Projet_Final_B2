@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "f6VlmyaiphakTsHog9JdMadgNyw0YEe9TarDaJ0b7RKO0K7w9/dtiwLI2MCA1w0/tWFiC6VBQXpIEtqW34yumQ==",
+  "dgSpecHash": "Pb3MKPl3IZ85GZUhR3YiKgCWF7dt++WwyZlJqyxGXaS+ccrzzcB7jSVIQfSdNVyoSq6jFm/1dj+w/vb4OpIGyA==",
   "success": true,
   "projectFilePath": "C:\\Users\\yfour\\OneDrive\\Documents\\cours_Ynov\\B2\\Projet_Final_B2\\API_Projet_Final_B2\\API_Projet_Final_B2.csproj",
   "expectedPackageFiles": [
@@ -19,6 +19,7 @@
     "C:\\Users\\yfour\\.nuget\\packages\\mysql.data\\8.4.0\\mysql.data.8.4.0.nupkg.sha512",
     "C:\\Users\\yfour\\.nuget\\packages\\mysqlclient\\5.5.1\\mysqlclient.5.5.1.nupkg.sha512",
     "C:\\Users\\yfour\\.nuget\\packages\\mysqlconnector\\2.3.0\\mysqlconnector.2.3.0.nupkg.sha512",
+    "C:\\Users\\yfour\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\yfour\\.nuget\\packages\\optimizeddatareader\\1.1.2\\optimizeddatareader.1.1.2.nupkg.sha512",
     "C:\\Users\\yfour\\.nuget\\packages\\runtime.native.system.data.sqlclient.sni\\4.7.0\\runtime.native.system.data.sqlclient.sni.4.7.0.nupkg.sha512",
     "C:\\Users\\yfour\\.nuget\\packages\\runtime.win-arm64.runtime.native.system.data.sqlclient.sni\\4.4.0\\runtime.win-arm64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
