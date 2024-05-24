@@ -72,7 +72,7 @@ class Program
         try
         {
             token = auth["Authorization"].Replace("Bearer ", "");
-            truc = SQLRequest.ExecuteQuery(connection, "SELECT Users.Id, Users.Is_Admin FROM Users JOIN Auth ON Users.Id = Auth.Id WHERE Auth.Token = '" + token + "';");
+            truc = SQLRequest.ExecuteSelectQuery(connection, "SELECT Users.Id, Users.Is_Admin FROM Users JOIN Auth ON Users.Id = Auth.Id WHERE Auth.Token = '" + token + "';");
             User_Id = truc[0].Id;
             Is_Admin = truc[0].Is_Admin;
         }
@@ -97,14 +97,245 @@ class Program
         {
             switch (path)
             {
-                
+                case "/get_token": // param : , user_id
+                    data = "Voici votre token d'identification";
+                    break;
+                case "/auteur": // param : , auteur_name, auteur_id
+                    data = "Voici la liste de tous les auteurs";
+                    break;
+                case "/categorie": // param : , categorie_name
+                    data = "Voici la liste de toutes les categories";
+                    break;
+                case "/user": // param : , username
+                    data = "Voici la liste de tous les utilisateurs";
+                    break;
+                case "/collection": // param : , collection_id
+                    if (Is_Admin)
+                    {
+                        data = "Voici les collections";
+                    }
+                    break;
+                case "/commentaire": // param : , commentaire_id
+                    if (Is_Admin)
+                    {
+                        data = "Voici les commentaires";
+                    }
+                    break;
+                case "/livre": // param : , livre_name
+                    data = "Voici les livres";
+                    break;
             }
         }
         else if (context.Request.HttpMethod == "POST")
         {
             switch (path)
             {
-
+                case "/auteur/create": // param : nom, desc, photo
+                    if (Is_Admin)
+                    {
+                        data = "Vous avez créer un auteur";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/auteur/delete": // param : auteur_id
+                    if (Is_Admin)
+                    {
+                        data = "Vous avez supprimer un auteur";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/categorie/create": // param : nom
+                    if (Is_Admin)
+                    {
+                        data = "Vous avez créer une categorie";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/categorie/delete": // param : categorie_id
+                    if (Is_Admin)
+                    {
+                        data = "Vous avez supprimer une categorie";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/user/create": // param : email, mdp, photo, nom, is_admin
+                    data = "Vous avez creer un utilisateur";
+                    break;
+                case "/user/delete": // param : user_id
+                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    {
+                        data = "Vous venez de supprimer un utilisateur";
+                    }
+                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    {
+                        data = "Votre compte à bien été supprimer";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/user/change_info": // param : email, mdp, photo, nom, is_admin (optio)
+                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    {
+                        data = "Vous venez de changer les info d'un utilisateur";
+                    }
+                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    {
+                        data = "Vous venez de changer les vos infos";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/user/follow_user": // param : follow_user_id
+                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    {
+                        data = "Vous venez de faire suivre un autre utilisateur à ....";
+                    }
+                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    {
+                        data = "Vous venez de suivre un utilisateur";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/user/unfollow_user": // param : unfollow_user_id
+                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    {
+                        data = "Vous venez de faire ne plus suivre un autre utilisateur à ....";
+                    }
+                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    {
+                        data = "Vous venez de ne plus suivre un utilisateur";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/user/follow_auteur": // param : follow_auteur_id
+                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    {
+                        data = "Vous venez de faire suivre un auteur à ....";
+                    }
+                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    {
+                        data = "Vous venez de suivre un auteur";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/user/unfollow_auteur": // param : follow_auteur_id
+                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    {
+                        data = "Vous venez de faire suivre un auteur à ....";
+                    }
+                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    {
+                        data = "Vous venez de ne plus suivre un auteur";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/collection/create": // param : nom, is_private
+                if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    {
+                        data = "Vous venez de créer une collection pour ....";
+                    }
+                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    {
+                        data = "Vous venez de vous créer une collection ";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/collection/delete": // parma : collection_id
+                if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    {
+                        data = "Vous venez de supprimer une collection pour ....";
+                    }
+                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    {
+                        data = "Vous venez de supprimer une de vos collection";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/collection/add_livre": // param : collection_id, livre_id
+                if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    {
+                        data = "Vous venez d'ajouter un livre à une collection pour ....";
+                    }
+                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    {
+                        data = "Vous venez d'ajouter un livre à une de vos collection";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/collection/delete_livre": // param : collection_id, livre_id
+                if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    {
+                        data = "Vous venez de supprimer un livre d'une collection de ....";
+                    }
+                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    {
+                        data = "Vous venez de supprimer un livre d'une de vos collection";
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/commentaire/add": // param : livre_id, text_commentaire
+                    data = "Vous avez ajouter un commentaire";
+                    break;
+                case "/commentaire/delete": // param : commentaire_id
+                    if (Is_Admin) {
+                        data = "Vous venez de supprimer un commentaire";
+                    }
+                    break;
+                case "/livre/add": // param : nom, description, photo, isbn, editeur, prix, auteur_id, categorie_id
+                    if (Is_Admin) {
+                        data = "Vous venez d'ajouter un livre";
+                    }
+                    break;
+                case "/livre/delete": // param : livre_id
+                    if (Is_Admin) {
+                        data = "Vous venez de supprimer un livre";
+                    }
+                    break;
+                case "/livre/change_info": // param : nom, description, photo, isbn, editeur, prix, auteur_id, categorie_id (opti)
+                    if (Is_Admin) {
+                        data = "Vous venez de changer les infos d'un livre";
+                    }
+                    break;
             }
         }
         else
@@ -116,7 +347,9 @@ class Program
         {
             data = "404 - Not Found:\n\n   - Verify the request method\n   - Verify the url\n   - Verify the parameters\n   - Verify your token";
             context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-        } else {
+        }
+        else
+        {
             data = JsonConvert.SerializeObject(data);
         }
 

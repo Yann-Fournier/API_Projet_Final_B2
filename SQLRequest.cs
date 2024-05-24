@@ -35,7 +35,7 @@ public class SQLRequest
         return connection;
     }
 
-    public static dynamic ExecuteQuery(SQLiteConnection connection, string query)
+    public static dynamic ExecuteSelectQuery(SQLiteConnection connection, string query)
     {
         DataTable dataTable = new DataTable();
 
