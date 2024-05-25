@@ -44,7 +44,7 @@ class Program
     static async Task ProcessRequest(HttpListenerContext context, SQLiteConnection connection)
     {
         // Initialisation de la réponse
-        dynamic data = 10; // Variable qui recupérera les json des requetes sql.  
+        dynamic data = new int[0]; // Variable qui recupérera les json des requetes sql.  
         bool pasOk = false;
 
         // Récupération du chemin et mise en forme
@@ -62,6 +62,8 @@ class Program
         {
             parameters.Add(key, paramet[key].Replace("+", " "));
         }
+
+        // Console.WriteLine(parameters);
 
         // Recupération du token d'authentification -----------------------------------------------------------------------------------------------------------
         NameValueCollection auth = context.Request.Headers;
@@ -98,12 +100,52 @@ class Program
             switch (path)
             {
                 case "/get_token": // param : , user_id
-                    data = "Voici votre token d'identification";
+                    if (parameters.Count == 1)
+                    {
+                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT Token FROM Auth WHERE Id = " + parameters["user_id"] + ";");
+                        pasOk = false;
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
                     break;
                 case "/auteur": // param : , auteur_name, auteur_id
-                    data = "Voici la liste de tous les auteurs";
+                    if (parameters.Count == 1)
+                    {
+                        string[] keys = parameters.AllKeys;
+                        Console.WriteLine(keys[0]);
+                        if (keys[0] == "auteur_id")
+                        {
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs WHERE Id = " + parameters["auteur_id"] + ";");
+                        }
+                        else if (keys[0] == "auteur_name")
+                        {
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs WHERE Nom = '" + parameters["auteur_name"] + "';");
+                        }
+                        else
+                        {
+                            pasOk = true;
+                        }
+                    }
+                    else if (parameters.Count == 0)
+                    {
+                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs;");
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
                     break;
                 case "/categorie": // param : , categorie_name
+                    if (Is_Admin)
+                    {
+                        data = 10;
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
                     data = "Voici la liste de toutes les categories";
                     break;
                 case "/user": // param : , username
@@ -123,6 +165,9 @@ class Program
                     break;
                 case "/livre": // param : , livre_name
                     data = "Voici les livres";
+                    break;
+                default:
+                    pasOk = true;
                     break;
             }
         }
@@ -258,7 +303,7 @@ class Program
                     }
                     break;
                 case "/collection/create": // param : nom, is_private
-                if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
                     {
                         data = "Vous venez de créer une collection pour ....";
                     }
@@ -272,7 +317,7 @@ class Program
                     }
                     break;
                 case "/collection/delete": // parma : collection_id
-                if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
                     {
                         data = "Vous venez de supprimer une collection pour ....";
                     }
@@ -286,7 +331,7 @@ class Program
                     }
                     break;
                 case "/collection/add_livre": // param : collection_id, livre_id
-                if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
                     {
                         data = "Vous venez d'ajouter un livre à une collection pour ....";
                     }
@@ -300,7 +345,7 @@ class Program
                     }
                     break;
                 case "/collection/delete_livre": // param : collection_id, livre_id
-                if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
                     {
                         data = "Vous venez de supprimer un livre d'une collection de ....";
                     }
@@ -317,24 +362,31 @@ class Program
                     data = "Vous avez ajouter un commentaire";
                     break;
                 case "/commentaire/delete": // param : commentaire_id
-                    if (Is_Admin) {
+                    if (Is_Admin)
+                    {
                         data = "Vous venez de supprimer un commentaire";
                     }
                     break;
                 case "/livre/add": // param : nom, description, photo, isbn, editeur, prix, auteur_id, categorie_id
-                    if (Is_Admin) {
+                    if (Is_Admin)
+                    {
                         data = "Vous venez d'ajouter un livre";
                     }
                     break;
                 case "/livre/delete": // param : livre_id
-                    if (Is_Admin) {
+                    if (Is_Admin)
+                    {
                         data = "Vous venez de supprimer un livre";
                     }
                     break;
                 case "/livre/change_info": // param : nom, description, photo, isbn, editeur, prix, auteur_id, categorie_id (opti)
-                    if (Is_Admin) {
+                    if (Is_Admin)
+                    {
                         data = "Vous venez de changer les infos d'un livre";
                     }
+                    break;
+                default:
+                    pasOk = true;
                     break;
             }
         }

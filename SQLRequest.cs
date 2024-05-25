@@ -38,7 +38,7 @@ public class SQLRequest
     public static dynamic ExecuteSelectQuery(SQLiteConnection connection, string query)
     {
         DataTable dataTable = new DataTable();
-
+        // Console.WriteLine(query);
         using (SQLiteCommand command = new SQLiteCommand(query, connection))
         using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(command))
         {
