@@ -45,13 +45,8 @@ public class SQLRequest
             adapter.Fill(dataTable);
         }
 
-        string jsonResult = ConvertDataTableToJson(dataTable);
+        string jsonResult = JsonConvert.SerializeObject(dataTable, Formatting.Indented);
         return JsonConvert.DeserializeObject(jsonResult);
-    }
-
-    static string ConvertDataTableToJson(DataTable dataTable)
-    {
-        return JsonConvert.SerializeObject(dataTable, Formatting.Indented);
     }
 
     public static void ExecuteOtherQuery(SQLiteConnection connection, string query)
