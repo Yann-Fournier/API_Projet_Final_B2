@@ -114,14 +114,15 @@ class Program
                     if (parameters.Count == 1)
                     {
                         string[] keys = parameters.AllKeys;
-                        Console.WriteLine(keys[0]);
                         if (keys[0] == "auteur_id")
                         {
                             data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs WHERE Id = " + parameters["auteur_id"] + ";");
+                            pasOk = false;
                         }
                         else if (keys[0] == "auteur_name")
                         {
                             data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs WHERE Nom = '" + parameters["auteur_name"] + "';");
+                            pasOk = false;
                         }
                         else
                         {
@@ -131,40 +132,161 @@ class Program
                     else if (parameters.Count == 0)
                     {
                         data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs;");
+                        pasOk = false;
                     }
                     else
                     {
                         pasOk = true;
                     }
                     break;
-                case "/categorie": // param : , categorie_name
+                case "/categorie": // param : , categorie_name, categorie_id
                     if (Is_Admin)
                     {
-                        data = 10;
+                        if (parameters.Count == 1)
+                        {
+                            string[] keys = parameters.AllKeys;
+                            if (keys[0] == "categorie_id")
+                            {
+                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories WHERE Id = " + parameters["categorie_id"] + ";");
+                            }
+                            else if (keys[0] == "categorie_name")
+                            {
+                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories WHERE Nom = '" + parameters["categorie_name"] + "';");
+                            }
+                            else
+                            {
+                                pasOk = true;
+                            }
+                        }
+                        else if (parameters.Count == 0)
+                        {
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories;");
+                        }
+                        else
+                        {
+                            pasOk = true;
+                        }
                     }
                     else
                     {
                         pasOk = true;
                     }
-                    data = "Voici la liste de toutes les categories";
                     break;
-                case "/user": // param : , username
-                    data = "Voici la liste de tous les utilisateurs";
+                case "/user": // param : , user_name, user_id
+                    if (parameters.Count == 1)
+                    {
+                        string[] keys = parameters.AllKeys;
+                        if (keys[0] == "user_id")
+                        {
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users WHERE Id = " + parameters["user_id"] + ";");
+                            pasOk = false;
+                        }
+                        else if (keys[0] == "user_name")
+                        {
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users WHERE Nom = '" + parameters["user_name"] + "';");
+                            pasOk = false;
+                        }
+                        else
+                        {
+                            pasOk = true;
+                        }
+                    }
+                    else if (parameters.Count == 0)
+                    {
+                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users;");
+                        pasOk = false;
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
                     break;
                 case "/collection": // param : , collection_id
                     if (Is_Admin)
                     {
-                        data = "Voici les collections";
+                        if (parameters.Count == 1)
+                        {
+                            string[] keys = parameters.AllKeys;
+                            if (keys[0] == "collection_id")
+                            {
+                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Collections WHERE Id = " + parameters["collection_id"] + ";");
+                            }
+                            else
+                            {
+                                pasOk = true;
+                            }
+                        }
+                        else if (parameters.Count == 0)
+                        {
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Collections;");
+                        }
+                        else
+                        {
+                            pasOk = true;
+                        }
+                    }
+                    else
+                    {
+                        pasOk = true;
                     }
                     break;
                 case "/commentaire": // param : , commentaire_id
                     if (Is_Admin)
                     {
-                        data = "Voici les commentaires";
+                        if (parameters.Count == 1)
+                        {
+                            string[] keys = parameters.AllKeys;
+                            if (keys[0] == "com_id")
+                            {
+                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Com WHERE Id = " + parameters["com_id"] + ";");
+                            }
+                            else
+                            {
+                                pasOk = true;
+                            }
+                        }
+                        else if (parameters.Count == 0)
+                        {
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Com;");
+                        }
+                        else
+                        {
+                            pasOk = true;
+                        }
+                    }
+                    else
+                    {
+                        pasOk = true;
                     }
                     break;
-                case "/livre": // param : , livre_name
-                    data = "Voici les livres";
+                case "/livre": // param : , livre_name, livre_id
+                    if (parameters.Count == 1)
+                        {
+                            string[] keys = parameters.AllKeys;
+                            if (keys[0] == "livre_id")
+                            {
+                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Id = " + parameters["livre_id"] + ";");
+                                pasOk = false;
+                            }
+                            else if (keys[0] == "livre_name")
+                            {
+                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Nom = '" + parameters["livre_name"] + "';");
+                                pasOk = false;
+                            }
+                            else
+                            {
+                                pasOk = true;
+                            }
+                        }
+                        else if (parameters.Count == 0)
+                        {
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres;");
+                            pasOk = false;
+                        }
+                        else
+                        {
+                            pasOk = true;
+                        }
                     break;
                 default:
                     pasOk = true;
