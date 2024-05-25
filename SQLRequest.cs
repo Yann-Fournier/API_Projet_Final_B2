@@ -53,4 +53,10 @@ public class SQLRequest
     {
         return JsonConvert.SerializeObject(dataTable, Formatting.Indented);
     }
+
+    public static void ExecuteOtherQuery(SQLiteConnection connection, string query)
+    {
+        MySqlCommand command = new MySqlCommand(queryLoginInfo, connection)
+        int rowsAffected = command.ExecuteNonQuery();
+    }
 }
