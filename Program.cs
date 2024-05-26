@@ -261,32 +261,32 @@ class Program
                     break;
                 case "/livre": // param : , livre_name, livre_id
                     if (parameters.Count == 1)
+                    {
+                        string[] keys = parameters.AllKeys;
+                        if (keys[0] == "livre_id")
                         {
-                            string[] keys = parameters.AllKeys;
-                            if (keys[0] == "livre_id")
-                            {
-                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Id = " + parameters["livre_id"] + ";");
-                                pasOk = false;
-                            }
-                            else if (keys[0] == "livre_name")
-                            {
-                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Nom = '" + parameters["livre_name"] + "';");
-                                pasOk = false;
-                            }
-                            else
-                            {
-                                pasOk = true;
-                            }
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Id = " + parameters["livre_id"] + ";");
+                            pasOk = false;
                         }
-                        else if (parameters.Count == 0)
+                        else if (keys[0] == "livre_name")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres;");
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Nom = '" + parameters["livre_name"] + "';");
                             pasOk = false;
                         }
                         else
                         {
                             pasOk = true;
                         }
+                    }
+                    else if (parameters.Count == 0)
+                    {
+                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres;");
+                        pasOk = false;
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
                     break;
                 default:
                     pasOk = true;
@@ -300,7 +300,23 @@ class Program
                 case "/auteur/create": // param : nom, desc, photo
                     if (Is_Admin)
                     {
-                        data = "Vous avez créer un auteur";
+                        if (parameters.Count == 3)
+                        {
+                            try
+                            {
+                                string query = "INSERT INTO Auteurs (Nom, Description, Photo) VALUES ('" + parameters["nom"] + "', '" + parameters["description"] + "', '" + parameters["photo"] + "');";
+                                SQLRequest.ExecuteOtherQuery(connection, query);
+                                data = "Vous avez créer un auteur";
+                            }
+                            catch (Exception e)
+                            {
+                                pasOk = true;
+                            }
+                        }
+                        else
+                        {
+                            pasOk = true;
+                        }
                     }
                     else
                     {

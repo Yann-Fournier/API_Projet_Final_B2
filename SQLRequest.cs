@@ -51,7 +51,7 @@ public class SQLRequest
 
     public static void ExecuteOtherQuery(SQLiteConnection connection, string query)
     {
-        MySqlCommand command = new MySqlCommand(queryLoginInfo, connection)
+        SQLiteCommand command = new SQLiteCommand(query, connection);
         int rowsAffected = command.ExecuteNonQuery();
     }
 }
