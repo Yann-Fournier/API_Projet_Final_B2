@@ -715,6 +715,8 @@ class Program
                     {
                         try
                         {
+                            string query = "DELETE FROM Collec WHERE Id_Collection = " + parameters["collection_id"] + ";";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
                             string query = "DELETE FROM Collections WHERE Id = " + parameters["collection_id"] + ";";
                             SQLRequest.ExecuteOtherQuery(connection, query);
                             data = "Vous venez de supprimer une collection pour un utilisateur";
@@ -728,6 +730,8 @@ class Program
                     {
                         try
                         {
+                            string query = "DELETE FROM Collec INNER JOIN Collections ON Collec.Id_Collection = Collections.Id WHERE Collections.Id_User = " + User_Id + "AND Collec.Id_Collection = " + parameters["collection_id"] + ";";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
                             string query = "DELETE FROM Collections WHERE Id = " + parameters["collection_id"] + " AND Id_User = " + User_Id + ";";
                             SQLRequest.ExecuteOtherQuery(connection, query);
                             data = "Vous venez de supprimer une de vos collection";
