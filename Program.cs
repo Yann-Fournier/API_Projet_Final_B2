@@ -326,7 +326,23 @@ class Program
                 case "/auteur/delete": // param : auteur_id
                     if (Is_Admin)
                     {
-                        data = "Vous avez supprimer un auteur";
+                        if (parameters.Count == 1)
+                        {
+                            try
+                            {
+                                string query = "DELETE FROM Auteurs WHERE Id = " + parameters["auteur_id"] + ";";
+                                SQLRequest.ExecuteOtherQuery(connection, query);
+                                data = "Vous avez supprimer un auteur";
+                            }
+                            catch (Exception e)
+                            {
+                                pasOk = true;
+                            }
+                        }
+                        else
+                        {
+                            pasOk = true;
+                        }
                     }
                     else
                     {
@@ -336,7 +352,23 @@ class Program
                 case "/categorie/create": // param : nom
                     if (Is_Admin)
                     {
-                        data = "Vous avez créer une categorie";
+                        if (parameters.Count == 1)
+                        {
+                            try
+                            {
+                                string query = "INSERT INTO Categories (Nom) VALUES ('" + parameters["nom"] + "');";
+                                SQLRequest.ExecuteOtherQuery(connection, query);
+                                data = "Vous avez créer une categorie";
+                            }
+                            catch (Exception e)
+                            {
+                                pasOk = true;
+                            }
+                        }
+                        else
+                        {
+                            pasOk = true;
+                        }
                     }
                     else
                     {
@@ -346,7 +378,23 @@ class Program
                 case "/categorie/delete": // param : categorie_id
                     if (Is_Admin)
                     {
-                        data = "Vous avez supprimer une categorie";
+                        if (parameters.Count == 1)
+                        {
+                            try
+                            {
+                                string query = "DELETE FROM Categories WHERE Id = " + parameters["categorie_id"] + ";";
+                                SQLRequest.ExecuteOtherQuery(connection, query);
+                                data = "Vous avez supprimer une categorie";
+                            }
+                            catch (Exception e)
+                            {
+                                pasOk = true;
+                            }
+                        }
+                        else
+                        {
+                            pasOk = true;
+                        }
                     }
                     else
                     {
@@ -354,34 +402,141 @@ class Program
                     }
                     break;
                 case "/user/create": // param : email, mdp, photo, nom, is_admin
-                    data = "Vous avez creer un utilisateur";
+                    if (parameters.Count == 5)
+                    {
+                        try
+                        {
+                            string query = "INSERT INTO Users (Email, Mdp, Photo, Nom, Is_Admin) VALUES ('" + parameters["email"] + "', '" + parameters["mdp"] + "', '" + parameters["photo"] + "', '" + parameters["nom"] + "', " + parameters["is_admin"] + ");";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous avez ajouter un auteur";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
                     break;
                 case "/user/delete": // param : user_id
-                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    if (parameters.Count == 1)
                     {
-                        data = "Vous venez de supprimer un utilisateur";
-                    }
-                    else if (Int32.Parse(parameters[0]) == User_Id)
-                    {
-                        data = "Votre compte à bien été supprimer";
+                        try
+                        {
+                            if (Int32.Parse(parameters["user_id"]) != User_Id && Is_Admin)
+                            {
+                                string query = "DELETE FROM Users WHERE Id = " + parameters["user_id"] + ";";
+                                SQLRequest.ExecuteOtherQuery(connection, query);
+                                data = "Vous avez supprimer un auteur";
+                            }
+                            else if (Int32.Parse(parameters["user_id"]) == User_Id)
+                            {
+                                string query = "DELETE FROM Users WHERE Id = " + parameters["user_id"] + ";";
+                                SQLRequest.ExecuteOtherQuery(connection, query);
+                                data = "Votre compte à bien été supprimer";
+                            }
+                            else
+                            {
+                                pasOk = true;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
                     else
                     {
                         pasOk = true;
                     }
+
                     break;
-                case "/user/change_info": // param : email, mdp, photo, nom, is_admin (optio)
-                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                case "/user/change_info": // param : email, mdp, photo, nom, is_admin (admin), user_id (admin) (optio)
+                    if (Is_Admin)
                     {
-                        data = "Vous venez de changer les info d'un utilisateur";
+                        if (parameters.Count > 0 && parameters.Count < 7)
+                        {
+                            string[] keys = parameters.AllKeys;
+                            foreach (string key in keys)
+                            {
+                                if (key == "email")
+                                {
+                                    string query = "UPDATE Users SET Email = '" + parameters["email"] + "' WHERE Id = " + User_Id + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " Votre email à bien été modifié.";
+                                }
+                                else if (key == "mdp")
+                                {
+                                    string query = "UPDATE Users SET Mdp = '" + parameters["mdp"] + "' WHERE Id = " + User_Id + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " Votre mot de passe à bien été modifié.";
+                                }
+                                else if (key == "photo")
+                                {
+                                    string query = "UPDATE Users SET Photo = '" + parameters["photo"] + "' WHERE Id = " + User_Id + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " Votre photo à bien été modifiée.";
+                                }
+                                else if (key == "nom")
+                                {
+                                    string query = "UPDATE Users SET Nom = '" + parameters["nom"] + "' WHERE Id = " + User_Id + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " Votre nom à bien été modifié.";
+                                }
+                                else if (key == "is_admin")
+                                {
+                                    try {
+                                        string query = "UPDATE Users SET Is_Admin = '" + parameters["is_admin"] + "' WHERE Id = " + parameters["user_id"] + ";";
+                                        SQLRequest.ExecuteOtherQuery(connection, query);
+                                        data = data + " Vos les permissions ont bien été modifiées.";
+                                    } catch (Exception e) {
+                                        pasOk = true;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            pasOk = true;
+                        }
                     }
-                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    else 
                     {
-                        data = "Vous venez de changer les vos infos";
-                    }
-                    else
-                    {
-                        pasOk = true;
+                        if (parameters.Count > 0 && parameters.Count < 6)
+                        {
+                            string[] keys = parameters.AllKeys;
+                            foreach (string key in keys)
+                            {
+                                if (key == "email")
+                                {
+                                    string query = "UPDATE Users SET Email = '" + parameters["email"] + "' WHERE Id = " + User_Id + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " Votre email à bien été modifié.";
+                                }
+                                else if (key == "mdp")
+                                {
+                                    string query = "UPDATE Users SET Mdp = '" + parameters["mdp"] + "' WHERE Id = " + User_Id + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " Votre mot de passe à bien été modifié.";
+                                }
+                                else if (key == "photo")
+                                {
+                                    string query = "UPDATE Users SET Photo = '" + parameters["photo"] + "' WHERE Id = " + User_Id + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " Votre photo à bien été modifiée.";
+                                }
+                                else if (key == "nom")
+                                {
+                                    string query = "UPDATE Users SET Nom = '" + parameters["nom"] + "' WHERE Id = " + User_Id + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " Votre nom à bien été modifié.";
+                                }
+                            }
+                        } else {
+                            pasOk = true;
+                        }
                     }
                     break;
                 case "/user/follow_user": // param : follow_user_id
