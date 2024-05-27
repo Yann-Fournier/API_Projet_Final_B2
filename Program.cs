@@ -785,7 +785,6 @@ class Program
                     }
                     else
                     {
-                        Console.WriteLine("PAs Ok 2222222222222222222");
                         pasOk = true;
                     }
                     break;
