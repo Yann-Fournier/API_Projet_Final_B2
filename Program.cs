@@ -80,8 +80,6 @@ class Program
         }
         catch (Exception e)
         {
-            User_Id = -1;
-            Is_Admin = false;
             pasOk = true;
         }
 
@@ -684,7 +682,7 @@ class Program
                     {
                         try
                         {
-                            string query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES (" + parameters["user_id"] + ", '" + parameters["nom"] + "', " + parameters["is_private"] ");";
+                            string query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES (" + parameters["user_id"] + ", '" + parameters["nom"] + "', " + parameters["is_private"] + ");";
                             SQLRequest.ExecuteOtherQuery(connection, query);
                             data = "Vous venez de créer une collection pour un utilisateur";
                         }
@@ -692,13 +690,13 @@ class Program
                         {
                             pasOk = true;
                         }
-                        
+
                     }
                     else if (User_Id != -1 && parameters.Count == 2)
                     {
                         try
                         {
-                            string query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES (" + User_Id + ", '" + parameters["nom"] + "', " + parameters["is_private"] ");";
+                            string query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES (" + User_Id + ", '" + parameters["nom"] + "', " + parameters["is_private"] + ");";
                             SQLRequest.ExecuteOtherQuery(connection, query);
                             data = "Vous venez de vous créer une collection ";
                         }
@@ -715,11 +713,29 @@ class Program
                 case "/collection/delete": // parma : collection_id
                     if (Is_Admin && parameters.Count == 1)
                     {
-                        data = "Vous venez de supprimer une collection pour ....";
+                        try
+                        {
+                            string query = "DELETE FROM Collections WHERE Id = " + parameters["collection_id"] + ";";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de supprimer une collection pour un utilisateur";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
                     else if (User_Id != -1 && parameters.Count == 1)
                     {
-                        data = "Vous venez de supprimer une de vos collection";
+                        try
+                        {
+                            string query = "DELETE FROM Collections WHERE Id = " + parameters["collection_id"] + " AND Id_User = " + User_Id + ";";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de supprimer une de vos collection";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
                     else
                     {
@@ -727,25 +743,58 @@ class Program
                     }
                     break;
                 case "/collection/add_livre": // param : collection_id, livre_id
-                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    if (Is_Admin && parameters.Count == 2)
                     {
-                        data = "Vous venez d'ajouter un livre à une collection pour ....";
+                        try
+                        {
+                            string query = "INSERT INTO Collec (Id_Livre, Id_Collection) VALUES (" + parameters["livre_id"] + ", " + parameters["collection_id"] + ");";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez d'ajouter un livre à une collection pour un utilisateur";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
-                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    else if (User_Id != -1 && parameters.Count == 2)
                     {
-                        data = "Vous venez d'ajouter un livre à une de vos collection";
+                        try
+                        {
+                            string checkQuery = "SELECT COUNT(*) FROM Collections WHERE Id = " + parameters["collection_id"] + " AND Id_User = " + User_Id + ";";
+                            dynamic count = SQLRequest.ExecuteSelectQuery(connection, checkQuery);
+                            if (count[0]["COUNT(*)"] > 0)
+                            {
+                                // Condition remplie, insérez les données
+                                string insertQuery = "INSERT INTO Collec (Id_Livre, Id_Collection) VALUES (" + parameters["livre_id"] + ", " + parameters["collection_id"] + ");";
+                                using (SQLiteCommand insertCommand = new SQLiteCommand(insertQuery, connection))
+                                {
+                                    int rowsAffected = insertCommand.ExecuteNonQuery();
+                                    data = "Vous venez d'ajouter un livre à une de vos collection";
+                                }
+                            }
+                            else
+                            {
+                                pasOk = true;
+                            }
+
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
                     else
                     {
+                        Console.WriteLine("PAs Ok 2222222222222222222");
                         pasOk = true;
                     }
                     break;
                 case "/collection/delete_livre": // param : collection_id, livre_id
-                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    if (Is_Admin && parameters.Count == 2)
                     {
                         data = "Vous venez de supprimer un livre d'une collection de ....";
                     }
-                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    else if (User_Id != -1 && parameters.Count == 2)
                     {
                         data = "Vous venez de supprimer un livre d'une de vos collection";
                     }
@@ -755,6 +804,10 @@ class Program
                     }
                     break;
                 case "/commentaire/add": // param : livre_id, text_commentaire
+                    if (parameters.Count == 2)
+                    {
+
+                    }
                     data = "Vous avez ajouter un commentaire";
                     break;
                 case "/commentaire/delete": // param : commentaire_id
@@ -764,21 +817,103 @@ class Program
                     }
                     break;
                 case "/livre/add": // param : nom, description, photo, isbn, editeur, prix, auteur_id, categorie_id
-                    if (Is_Admin)
+                    if (Is_Admin && parameters.Count == 8)
                     {
-                        data = "Vous venez d'ajouter un livre";
+                        try
+                        {
+                            string query = "INSERT INTO Livres (Id_Auteur, Id_Categorie, Nom, Description, Photo, ISBN, Editeur, Prix) VALUES (" + parameters["auteur_id"] + ", " + parameters["categorie_id"] + ", '" + parameters["nom"] + "', '" + parameters["description"] + "', '" + parameters["photo"] + "', '" + parameters["isbn"] + "', '" + parameters["editeur"] + "', " + parameters["prix"] + ");";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez d'ajouter un livre";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
                     break;
                 case "/livre/delete": // param : livre_id
-                    if (Is_Admin)
+                    if (Is_Admin && parameters.Count == 1)
                     {
-                        data = "Vous venez de supprimer un livre";
+                        try
+                        {
+                            string query = "DELETE FROM Livres WHERE Id = " + parameters["livre_id"] + ";";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de supprimer un livre";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
                     break;
-                case "/livre/change_info": // param : nom, description, photo, isbn, editeur, prix, auteur_id, categorie_id (opti)
+                case "/livre/change_info": // param : livre_id (ob), nom, description, photo, isbn, editeur, prix, auteur_id, categorie_id, (opti)
                     if (Is_Admin)
                     {
-                        data = "Vous venez de changer les infos d'un livre";
+                        if (parameters.Count > 0 && parameters.Count < 7)
+                        {
+                            string[] keys = parameters.AllKeys;
+                            foreach (string key in keys)
+                            {
+                                if (key == "id_auteur")
+                                {
+                                    string query = "UPDATE Livres SET Id_Auteur = '" + parameters["id_auteur"] + "' WHERE Id = " + parameters["livre_id"] + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " L'auteur de ce livre à bien été modifier.";
+                                }
+                                else if (key == "id_categorie")
+                                {
+                                    string query = "UPDATE Livres SET Id_Categorie = '" + parameters["id_categorie"] + "' WHERE Id = " + parameters["livre_id"] + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " L'auteur de ce livre à bien été modifier.";
+                                }
+                                else if (key == "nom")
+                                {
+                                    string query = "UPDATE Livres SET Nom = '" + parameters["nom"] + "' WHERE Id = " + parameters["livre_id"] + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " L'auteur de ce livre à bien été modifier.";
+                                }
+                                else if (key == "description")
+                                {
+                                    string query = "UPDATE Livres SET Description = '" + parameters["description"] + "' WHERE Id = " + parameters["livre_id"] + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " L'auteur de ce livre à bien été modifier.";
+                                }
+                                else if (key == "photo")
+                                {
+
+                                    string query = "UPDATE Livres SET Photo = '" + parameters["photo"] + "' WHERE Id = " + parameters["livre_id"] + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " L'auteur de ce livre à bien été modifier.";
+
+                                }
+                                else if (key == "isbn")
+                                {
+                                    string query = "UPDATE Livres SET ISBN = '" + parameters["isbn"] + "' WHERE Id = " + parameters["livre_id"] + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " L'auteur de ce livre à bien été modifier.";
+                                }
+                                else if (key == "editeur")
+                                {
+                                    string query = "UPDATE Livres SET Editeur = '" + parameters["editeur"] + "' WHERE Id = " + parameters["livre_id"] + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " L'auteur de ce livre à bien été modifier.";
+                                }
+                                else if (key == "prix")
+                                {
+                                    string query = "UPDATE Livres SET Prix = '" + parameters["prix"] + "' WHERE Id = " + parameters["livre_id"] + ";";
+                                    SQLRequest.ExecuteOtherQuery(connection, query);
+                                    data = data + " L'auteur de ce livre à bien été modifier.";
+                                }
+                            }
+                        }
+                        else
+                        {
+                            pasOk = true;
+                        }
+                    }
+                    else
+                    {
+                        pasOk = true;
                     }
                     break;
                 default:
