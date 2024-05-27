@@ -80,6 +80,8 @@ class Program
         }
         catch (Exception e)
         {
+            User_Id = -1;
+            Is_Admin = false;
             pasOk = true;
         }
 
@@ -487,11 +489,14 @@ class Program
                                 }
                                 else if (key == "is_admin")
                                 {
-                                    try {
+                                    try
+                                    {
                                         string query = "UPDATE Users SET Is_Admin = '" + parameters["is_admin"] + "' WHERE Id = " + parameters["user_id"] + ";";
                                         SQLRequest.ExecuteOtherQuery(connection, query);
                                         data = data + " Vos les permissions ont bien été modifiées.";
-                                    } catch (Exception e) {
+                                    }
+                                    catch (Exception e)
+                                    {
                                         pasOk = true;
                                     }
                                 }
@@ -502,7 +507,7 @@ class Program
                             pasOk = true;
                         }
                     }
-                    else 
+                    else if (User_Id != -1)
                     {
                         if (parameters.Count > 0 && parameters.Count < 6)
                         {
@@ -534,75 +539,173 @@ class Program
                                     data = data + " Votre nom à bien été modifié.";
                                 }
                             }
-                        } else {
+                        }
+                        else
+                        {
                             pasOk = true;
                         }
                     }
-                    break;
-                case "/user/follow_user": // param : follow_user_id
-                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    else
                     {
-                        data = "Vous venez de faire suivre un autre utilisateur à ....";
+                        pasOk = true;
                     }
-                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    break;
+                case "/user/follow_user": // param : follow_user_id, user_id (admin)
+                    if (Is_Admin && parameters.Count == 2)
                     {
-                        data = "Vous venez de suivre un utilisateur";
+                        try
+                        {
+                            string query = "INSERT INTO Users_Suivi (Id_User, Id_User_Suivi) VALUES (" + parameters["user_id"] + ", " + parameters["follow_user_id"] + ");";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de faire suivre un autre utilisateur à qq'un.";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
+
+                    }
+                    else if (User_Id != -1 && parameters.Count == 1)
+                    {
+                        try
+                        {
+                            string query = "INSERT INTO Users_Suivi (Id_User, Id_User_Suivi) VALUES (" + User_Id + ", " + parameters["follow_user_id"] + ");";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de suivre un autre utilisateur";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
                     else
                     {
                         pasOk = true;
                     }
                     break;
-                case "/user/unfollow_user": // param : unfollow_user_id
-                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                case "/user/unfollow_user": // param : unfollow_user_id, user_id (admin)
+                    if (Is_Admin && parameters.Count == 2)
                     {
-                        data = "Vous venez de faire ne plus suivre un autre utilisateur à ....";
+                        try
+                        {
+                            string query = "DELETE FROM Users_Suivi WHERE Id_User = " + parameters["user_id"] + " AND Id_User_Suivi = " + parameters["unfollow_user_id"] + ";";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de faire ne plus suivre un autre utilisateur";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
-                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    else if (User_Id != -1 && parameters.Count == 1)
                     {
-                        data = "Vous venez de ne plus suivre un utilisateur";
-                    }
-                    else
-                    {
-                        pasOk = true;
-                    }
-                    break;
-                case "/user/follow_auteur": // param : follow_auteur_id
-                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
-                    {
-                        data = "Vous venez de faire suivre un auteur à ....";
-                    }
-                    else if (Int32.Parse(parameters[0]) == User_Id)
-                    {
-                        data = "Vous venez de suivre un auteur";
-                    }
-                    else
-                    {
-                        pasOk = true;
-                    }
-                    break;
-                case "/user/unfollow_auteur": // param : follow_auteur_id
-                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
-                    {
-                        data = "Vous venez de faire suivre un auteur à ....";
-                    }
-                    else if (Int32.Parse(parameters[0]) == User_Id)
-                    {
-                        data = "Vous venez de ne plus suivre un auteur";
+                        try
+                        {
+                            string query = "DELETE FROM Users_Suivi WHERE Id_User = " + User_Id + " AND Id_User_Suivi = " + parameters["unfollow_user_id"] + ";";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de ne plus suivre un utilisateur";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
                     else
                     {
                         pasOk = true;
                     }
                     break;
-                case "/collection/create": // param : nom, is_private
-                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                case "/user/follow_auteur": // param : follow_auteur_id, user_id (admin)
+                    if (Is_Admin && parameters.Count == 2)
                     {
-                        data = "Vous venez de créer une collection pour ....";
+                        try
+                        {
+                            string query = "INSERT INTO Auteurs_Suivi (Id_User, Id_Auteur) VALUES (" + parameters["user_id"] + ", " + parameters["follow_auteur_id"] + ");";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de faire suivre un auteur à un utilisateur";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
-                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    else if (User_Id != -1 && parameters.Count == 1)
                     {
-                        data = "Vous venez de vous créer une collection ";
+                        try
+                        {
+                            string query = "INSERT INTO Auteurs_Suivi (Id_User, Id_Auteur) VALUES (" + User_Id + ", " + parameters["follow_auteur_id"] + ");";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de suivre un auteur";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/user/unfollow_auteur": // param : unfollow_auteur_id, user_id (admin)
+                    if (Is_Admin && parameters.Count == 2)
+                    {
+                        try
+                        {
+                            string query = "DELETE FROM Auteurs_Suivi WHERE Id_User = " + parameters["user_id"] + " AND Id_Auteur = " + parameters["unfollow_auteur_id"] + ";";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de faire ne plus suivre un auteur à un utilisateur";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
+                    }
+                    else if (User_Id != -1 && parameters.Count == 1)
+                    {
+                        try
+                        {
+                            string query = "DELETE FROM Users_Suivi WHERE Id_User = " + User_Id + " AND Id_Auteur = " + parameters["unfollow_auteur_id"] + ";";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de ne plus suivre un auteur";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
+                    break;
+                case "/collection/create": // param : nom, is_private, user_id (admin)
+                    if (Is_Admin && parameters.Count == 3)
+                    {
+                        try
+                        {
+                            string query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES (" + parameters["user_id"] + ", '" + parameters["nom"] + "', " + parameters["is_private"] ");";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de créer une collection pour un utilisateur";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
+                        
+                    }
+                    else if (User_Id != -1 && parameters.Count == 2)
+                    {
+                        try
+                        {
+                            string query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES (" + User_Id + ", '" + parameters["nom"] + "', " + parameters["is_private"] ");";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de vous créer une collection ";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
                     else
                     {
@@ -610,11 +713,11 @@ class Program
                     }
                     break;
                 case "/collection/delete": // parma : collection_id
-                    if (Int32.Parse(parameters[0]) != User_Id && Is_Admin)
+                    if (Is_Admin && parameters.Count == 1)
                     {
                         data = "Vous venez de supprimer une collection pour ....";
                     }
-                    else if (Int32.Parse(parameters[0]) == User_Id)
+                    else if (User_Id != -1 && parameters.Count == 1)
                     {
                         data = "Vous venez de supprimer une de vos collection";
                     }
