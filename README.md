@@ -1,7 +1,5 @@
 ﻿# To do List
-- faire les codes des routes (changer la valeur de pasOk pour les routes sans authentification pour (/livre, /user, /auteur, /categorie, /user/create)),
-- faire requete "/collection/delete_livre",
-- faire requete "/commentaire/....",
+- verifier requete "/collection/delete deuxième partie" 
 
 # API Projet Final B2 (avec Patchouf)
 

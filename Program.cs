@@ -238,7 +238,7 @@ class Program
                             string[] keys = parameters.AllKeys;
                             if (keys[0] == "com_id")
                             {
-                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Com WHERE Id = " + parameters["com_id"] + ";");
+                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Commentaires WHERE Id = " + parameters["commentaire_id"] + ";");
                             }
                             else
                             {
@@ -247,7 +247,7 @@ class Program
                         }
                         else if (parameters.Count == 0)
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Com;");
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Commentaires;");
                         }
                         else
                         {
@@ -409,6 +409,7 @@ class Program
                             string query = "INSERT INTO Users (Email, Mdp, Photo, Nom, Is_Admin) VALUES ('" + parameters["email"] + "', '" + parameters["mdp"] + "', '" + parameters["photo"] + "', '" + parameters["nom"] + "', " + parameters["is_admin"] + ");";
                             SQLRequest.ExecuteOtherQuery(connection, query);
                             data = "Vous avez ajouter un auteur";
+                            pasOk = false;
                         }
                         catch (Exception e)
                         {
@@ -795,11 +796,44 @@ class Program
                 case "/collection/delete_livre": // param : collection_id, livre_id
                     if (Is_Admin && parameters.Count == 2)
                     {
-                        data = "Vous venez de supprimer un livre d'une collection de ....";
+                        try
+                        {
+                            string query = "DELETE FROM Collec WHERE Id_Livre = " + parameters["livre_id"] + " AND Id_Collection = " + parameters["collection_id"] + ";";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de supprimer un livre d'une collection d'un utilisateur";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
+
                     }
                     else if (User_Id != -1 && parameters.Count == 2)
                     {
-                        data = "Vous venez de supprimer un livre d'une de vos collection";
+                        try
+                        {
+                            string checkQuery = "SELECT COUNT(*) FROM Collections WHERE Id = " + parameters["collection_id"] + " AND Id_User = " + User_Id + ";";
+                            dynamic count = SQLRequest.ExecuteSelectQuery(connection, checkQuery);
+                            if (count[0]["COUNT(*)"] > 0)
+                            {
+                                // Condition remplie, suppression des données
+                                string insertQuery = "DELETE FROM Collec WHERE Id_Livre = " + parameters["livre_id"] + " AND Id_Collection = " + parameters["collection_id"] + ";";
+                                using (SQLiteCommand insertCommand = new SQLiteCommand(insertQuery, connection))
+                                {
+                                    int rowsAffected = insertCommand.ExecuteNonQuery();
+                                    data = "Vous venez de supprimer un livre d'une de vos collection";
+                                }
+                            }
+                            else
+                            {
+                                pasOk = true;
+                            }
+
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
                     else
                     {
@@ -809,14 +843,39 @@ class Program
                 case "/commentaire/add": // param : livre_id, text_commentaire
                     if (parameters.Count == 2)
                     {
-
+                        try
+                        {
+                            string query = "INSERT INTO Commentaires (Id_User, Id_Livre, Com) VALUES (" + User_Id + ", " + parameters["livre_id"] + ", '" + parameters["text_commentaire"] + "');";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous avez ajouter un commentaire";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
                     }
-                    data = "Vous avez ajouter un commentaire";
+                    else
+                    {
+                        pasOk = true;
+                    }
                     break;
                 case "/commentaire/delete": // param : commentaire_id
-                    if (Is_Admin)
+                    if (Is_Admin && parameters.Count == 1)
                     {
-                        data = "Vous venez de supprimer un commentaire";
+                        try
+                        {
+                            string query = "DELETE FROM Commentaires WHERE Id = " + parameters["commentaire_id"] + ";";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            data = "Vous venez de supprimer un commentaire";
+                        }
+                        catch (Exception e)
+                        {
+                            pasOk = true;
+                        }
+                    }
+                    else
+                    {
+                        pasOk = true;
                     }
                     break;
                 case "/livre/add": // param : nom, description, photo, isbn, editeur, prix, auteur_id, categorie_id
