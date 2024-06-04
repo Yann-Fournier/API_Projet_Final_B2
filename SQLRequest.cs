@@ -17,8 +17,8 @@ public class SQLRequest
     public static SQLiteConnection OpenBDDConnection()
     {
         // string connectionString = "Data Source=chemin_de_la_database";
-        // string connectionString = @"Data Source=../BDD_Projet_Final_B2/Database_Biblio.db"; // Chemin relatif
-        string connectionString = $"serve=localhost;port=3306;User ID=root;Password=root;";
+        string connectionString = @"Data Source=../BDD_Projet_Final_B2/Database_Biblio.db"; // Chemin relatif
+        // string connectionString = $"serve=localhost;port=3306;User ID=root;Password=root;";
 
         // Création de la connection
         SQLiteConnection connection = new SQLiteConnection(connectionString);
