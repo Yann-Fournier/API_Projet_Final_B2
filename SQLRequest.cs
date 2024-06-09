@@ -17,8 +17,8 @@ public class SQLRequest
     public static SQLiteConnection OpenBDDConnection()
     {
         // string connectionString = "Data Source=chemin_de_la_database";
-        // string connectionString = @"Data Source=../BDD_Projet_Final_B2/Database_Biblio.db"; // Chemin relatif
-        string connectionString = $"serve=localhost;port=3306;User ID=root;Password=root;";
+        string connectionString = @"Data Source=../BDD_Projet_Final_B2/Database_Biblio.db"; // Chemin relatif
+        // string connectionString = $"serve=localhost;port=3306;User ID=root;Password=root;";
 
         // Création de la connection
         SQLiteConnection connection = new SQLiteConnection(connectionString);
@@ -53,5 +53,22 @@ public class SQLRequest
     {
         SQLiteCommand command = new SQLiteCommand(query, connection);
         int rowsAffected = command.ExecuteNonQuery();
+    }
+
+    public static String HashPwd(string mdp)
+    {
+        using (SHA256Managed sha1 = new SHA256Managed())
+        {
+            var hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(mdp));
+            var sb = new StringBuilder(hash.Length * 2);
+
+            foreach (byte b in hash)
+            {
+                // can be "X2" if you want uppercase
+                sb.Append(b.ToString("x2"));
+            }
+
+            return sb.ToString();
+        }
     }
 }

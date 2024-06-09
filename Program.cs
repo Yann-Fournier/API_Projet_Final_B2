@@ -80,6 +80,9 @@ class Program
         }
         catch (Exception e)
         {
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            Console.WriteLine(e);
+            Console.WriteLine("----------------------------------------------------------------------------------");
             pasOk = true;
         }
 
@@ -99,10 +102,10 @@ class Program
         {
             switch (path)
             {
-                case "/get_token": // param : , user_id
-                    if (parameters.Count == 1)
+                case "/get_token": // param : mdp, email
+                    if (parameters.Count == 2)
                     {
-                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT Token FROM Auth WHERE Id = " + parameters["user_id"] + ";");
+                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT Token FROM Auth JOIN Users ON Auth.Id = Users.Id WHERE Mdp = '" + SQLRequest.HashPwd(parameters["mdp"]) + "' AND Email = '" + parameters["email"] + "';");
                         pasOk = false;
                     }
                     else
@@ -122,6 +125,11 @@ class Program
                         else if (keys[0] == "auteur_name")
                         {
                             data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs WHERE Nom = '" + parameters["auteur_name"] + "';");
+                            pasOk = false;
+                        }
+                        else if (keys[0] == "aleatoire")
+                        {
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs ORDER BY RANDOM() LIMIT " + parameters["aleatoire"] + ";");
                             pasOk = false;
                         }
                         else
@@ -184,6 +192,11 @@ class Program
                         else if (keys[0] == "user_name")
                         {
                             data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users WHERE Nom = '" + parameters["user_name"] + "';");
+                            pasOk = false;
+                        }
+                        else if (keys[0] == "aleatoire")
+                        {
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users ORDER BY RANDOM() LIMIT " + parameters["aleatoire"] + ";");
                             pasOk = false;
                         }
                         else
@@ -273,6 +286,11 @@ class Program
                             data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Nom = '" + parameters["livre_name"] + "';");
                             pasOk = false;
                         }
+                        else if (keys[0] == "aleatoire")
+                        {
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres ORDER BY RANDOM() LIMIT " + parameters["aleatoire"] + ";");
+                            pasOk = false;
+                        }
                         else
                         {
                             pasOk = true;
@@ -310,6 +328,7 @@ class Program
                             }
                             catch (Exception e)
                             {
+                                Console.WriteLine(e);
                                 pasOk = true;
                             }
                         }
@@ -336,6 +355,7 @@ class Program
                             }
                             catch (Exception e)
                             {
+                                Console.WriteLine(e);
                                 pasOk = true;
                             }
                         }
@@ -362,6 +382,7 @@ class Program
                             }
                             catch (Exception e)
                             {
+                                Console.WriteLine(e);
                                 pasOk = true;
                             }
                         }
@@ -388,6 +409,7 @@ class Program
                             }
                             catch (Exception e)
                             {
+                                Console.WriteLine(e);
                                 pasOk = true;
                             }
                         }
@@ -401,18 +423,39 @@ class Program
                         pasOk = true;
                     }
                     break;
-                case "/user/create": // param : email, mdp, photo, nom, is_admin
-                    if (parameters.Count == 5)
+                case "/user/create": // param : email, mdp, photo, nom
+                    if (parameters.Count == 4)
                     {
                         try
                         {
-                            string query = "INSERT INTO Users (Email, Mdp, Photo, Nom, Is_Admin) VALUES ('" + parameters["email"] + "', '" + parameters["mdp"] + "', '" + parameters["photo"] + "', '" + parameters["nom"] + "', " + parameters["is_admin"] + ");";
+                            // Création de l'utilisateur
+                            string query = "INSERT INTO Users (Email, Mdp, Photo, Nom, Is_Admin) VALUES ('" + parameters["email"] + "', '" + SQLRequest.HashPwd(parameters["mdp"]) + "', '" + parameters["photo"] + "', '" + parameters["nom"] + "', 0);";
                             SQLRequest.ExecuteOtherQuery(connection, query);
+                            query = "SELECT Id FROM Users WHERE Mdp = '" + SQLRequest.HashPwd(parameters["mdp"]) + "' AND Email = '" + parameters["email"] + "';";
+                            dynamic id = SQLRequest.ExecuteSelectQuery(connection, query);
+                            // Insertion des collection
+                            query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES (" + id[0]["Id"] + ", 'J&#39ai', 1);";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES(" + id[0]["Id"] + ", 'Ma pile à lire', 1);";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES(" + id[0]["Id"] + ", 'Je lis', 1);";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES(" + id[0]["Id"] + ", 'J&#39ai lu', 1);";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES(" + id[0]["Id"] + ", 'J&#39aime', 1);";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES(" + id[0]["Id"] + ", 'Ma liste de souhait', 1);";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+                            // Création du token
+                            query = "INSERT INTO Auth (Id, Token) VALUES(" + id[0]["Id"] + ", '" + SQLRequest.HashPwd(parameters["nom"]) + "');";
+                            SQLRequest.ExecuteOtherQuery(connection, query);
+
                             data = "Vous avez ajouter un auteur";
                             pasOk = false;
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -445,6 +488,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -496,6 +540,7 @@ class Program
                                     }
                                     catch (Exception e)
                                     {
+                                        Console.WriteLine(e);
                                         pasOk = true;
                                     }
                                 }
@@ -560,6 +605,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
 
@@ -574,6 +620,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -593,6 +640,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -606,6 +654,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -625,6 +674,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -638,6 +688,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -657,6 +708,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -670,6 +722,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -689,6 +742,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
 
@@ -703,6 +757,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -724,6 +779,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -739,6 +795,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -758,6 +815,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -785,6 +843,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -804,6 +863,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
 
@@ -832,6 +892,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -851,6 +912,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -870,6 +932,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -889,6 +952,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
@@ -904,6 +968,7 @@ class Program
                         }
                         catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
