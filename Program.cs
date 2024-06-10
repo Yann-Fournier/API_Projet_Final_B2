@@ -74,7 +74,7 @@ class Program
         try
         {
             token = auth["Authorization"].Replace("Bearer ", "");
-            truc = SQLRequest.ExecuteSelectQuery(connection, "SELECT Users.Id, Users.Is_Admin FROM Users JOIN Auth ON Users.Id = Auth.Id WHERE Auth.Token = '" + token + "';");
+            truc = await SQLRequest.ExecuteSelectQuery(connection, "SELECT Users.Id, Users.Is_Admin FROM Users JOIN Auth ON Users.Id = Auth.Id WHERE Auth.Token = '" + token + "';");
             User_Id = truc[0].Id;
             Is_Admin = truc[0].Is_Admin;
         }
@@ -92,10 +92,12 @@ class Program
             if (parameters.Count != 0)
             {
                 data = "They are too many parameters.";
+                pasOk = true;
             }
             else
             {
                 data = "Hello! Welcome to the home page of this API. This is a project for our school. You can find the documentation at : https://github.com/Yann-Fournier/Projet_Final_B2.";
+                pasOk = false;
             }
         }
         else if (context.Request.HttpMethod == "GET")
@@ -105,7 +107,7 @@ class Program
                 case "/get_token": // param : mdp, email
                     if (parameters.Count == 2)
                     {
-                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT Token FROM Auth JOIN Users ON Auth.Id = Users.Id WHERE Mdp = '" + SQLRequest.HashPwd(parameters["mdp"]) + "' AND Email = '" + parameters["email"] + "';");
+                        data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT Token FROM Auth JOIN Users ON Auth.Id = Users.Id WHERE Mdp = '" + SQLRequest.HashPwd(parameters["mdp"]) + "' AND Email = '" + parameters["email"] + "';");
                         pasOk = false;
                     }
                     else
@@ -119,17 +121,17 @@ class Program
                         string[] keys = parameters.AllKeys;
                         if (keys[0] == "auteur_id")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs WHERE Id = " + parameters["auteur_id"] + ";");
+                            data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs WHERE Id = " + parameters["auteur_id"] + ";");
                             pasOk = false;
                         }
                         else if (keys[0] == "auteur_name")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs WHERE Nom = '" + parameters["auteur_name"] + "';");
+                            data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs WHERE Nom = '" + parameters["auteur_name"] + "';");
                             pasOk = false;
                         }
                         else if (keys[0] == "aleatoire")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs ORDER BY RANDOM() LIMIT " + parameters["aleatoire"] + ";");
+                            data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs ORDER BY RANDOM() LIMIT " + parameters["aleatoire"] + ";");
                             pasOk = false;
                         }
                         else
@@ -139,7 +141,7 @@ class Program
                     }
                     else if (parameters.Count == 0)
                     {
-                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs;");
+                        data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs;");
                         pasOk = false;
                     }
                     else
@@ -155,11 +157,11 @@ class Program
                             string[] keys = parameters.AllKeys;
                             if (keys[0] == "categorie_id")
                             {
-                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories WHERE Id = " + parameters["categorie_id"] + ";");
+                                data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories WHERE Id = " + parameters["categorie_id"] + ";");
                             }
                             else if (keys[0] == "categorie_name")
                             {
-                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories WHERE Nom = '" + parameters["categorie_name"] + "';");
+                                data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories WHERE Nom = '" + parameters["categorie_name"] + "';");
                             }
                             else
                             {
@@ -168,7 +170,7 @@ class Program
                         }
                         else if (parameters.Count == 0)
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories;");
+                            data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories;");
                         }
                         else
                         {
@@ -186,17 +188,17 @@ class Program
                         string[] keys = parameters.AllKeys;
                         if (keys[0] == "user_id")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users WHERE Id = " + parameters["user_id"] + ";");
+                            data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users WHERE Id = " + parameters["user_id"] + ";");
                             pasOk = false;
                         }
                         else if (keys[0] == "user_name")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users WHERE Nom = '" + parameters["user_name"] + "';");
+                            data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users WHERE Nom = '" + parameters["user_name"] + "';");
                             pasOk = false;
                         }
                         else if (keys[0] == "aleatoire")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users ORDER BY RANDOM() LIMIT " + parameters["aleatoire"] + ";");
+                            data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users ORDER BY RANDOM() LIMIT " + parameters["aleatoire"] + ";");
                             pasOk = false;
                         }
                         else
@@ -206,7 +208,7 @@ class Program
                     }
                     else if (parameters.Count == 0)
                     {
-                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users;");
+                        data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users;");
                         pasOk = false;
                     }
                     else
@@ -222,7 +224,7 @@ class Program
                             string[] keys = parameters.AllKeys;
                             if (keys[0] == "collection_id")
                             {
-                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Collections WHERE Id = " + parameters["collection_id"] + ";");
+                                data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Collections WHERE Id = " + parameters["collection_id"] + ";");
                             }
                             else
                             {
@@ -231,7 +233,7 @@ class Program
                         }
                         else if (parameters.Count == 0)
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Collections;");
+                            data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Collections;");
                         }
                         else
                         {
@@ -251,7 +253,7 @@ class Program
                             string[] keys = parameters.AllKeys;
                             if (keys[0] == "com_id")
                             {
-                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Commentaires WHERE Id = " + parameters["commentaire_id"] + ";");
+                                data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Commentaires WHERE Id = " + parameters["commentaire_id"] + ";");
                             }
                             else
                             {
@@ -260,7 +262,7 @@ class Program
                         }
                         else if (parameters.Count == 0)
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Commentaires;");
+                            data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Commentaires;");
                         }
                         else
                         {
@@ -278,17 +280,17 @@ class Program
                         string[] keys = parameters.AllKeys;
                         if (keys[0] == "livre_id")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Id = " + parameters["livre_id"] + ";");
+                            data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Id = " + parameters["livre_id"] + ";");
                             pasOk = false;
                         }
                         else if (keys[0] == "livre_name")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Nom = '" + parameters["livre_name"] + "';");
+                            data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Nom = '" + parameters["livre_name"] + "';");
                             pasOk = false;
                         }
                         else if (keys[0] == "aleatoire")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres ORDER BY RANDOM() LIMIT " + parameters["aleatoire"] + ";");
+                            data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres ORDER BY RANDOM() LIMIT " + parameters["aleatoire"] + ";");
                             pasOk = false;
                         }
                         else
@@ -298,7 +300,7 @@ class Program
                     }
                     else if (parameters.Count == 0)
                     {
-                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres;");
+                        data = await SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres;");
                         pasOk = false;
                     }
                     else
