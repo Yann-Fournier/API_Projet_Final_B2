@@ -107,7 +107,7 @@ class Program
                 case "/get_token": // param : mdp, email
                     if (parameters.Count == 2)
                     {
-                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT Token FROM Auth JOIN Users ON Auth.Id = Users.Id WHERE Mdp = '" + SQLRequest.HashPwd(parameters["mdp"]) + "' AND Email = '" + parameters["email"] + "';");
+                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT Auth.Token, Users.Is_Admin, Users.Id FROM Auth JOIN Users ON Auth.Id = Users.Id WHERE Users.Mdp = '" + SQLRequest.HashPwd(parameters["mdp"]) + "' AND Users.Email = '" + parameters["email"] + "';");
                         pasOk = false;
                     }
                     else
@@ -313,6 +313,24 @@ class Program
                         pasOk = true;
                     }
                     break;
+                case "/verif_email": // param : email
+                    if (parameters.Count == 1)
+                    {
+                        try
+                        {
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT COUNT(*) as Count FROM Users WHERE Email = '" + parameters["email"] + "';");
+                            pasOk = false;
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            pasOk = true;
+                        }
+                    }
+                    else
+                    {
+                        pasOk = true;
+                    }
                 default:
                     pasOk = true;
                     break;
