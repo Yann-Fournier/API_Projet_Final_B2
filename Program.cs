@@ -216,7 +216,7 @@ class Program
                         pasOk = true;
                     }
                     break;
-                case "/collection": // param : , collection_id
+                case "/collection": // param : , collection_id, user_Id
                     if (Is_Admin)
                     {
                         if (parameters.Count == 1)
@@ -234,6 +234,25 @@ class Program
                         else if (parameters.Count == 0)
                         {
                             data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Collections;");
+                        }
+                        else
+                        {
+                            pasOk = true;
+                        }
+                    }
+                    else if (User_Id != -1)
+                    { 
+                        if (parameters.Count == 1)
+                        {
+                            string[] keys = parameters.AllKeys;
+                            if (keys[0] == "user_id")
+                            {
+                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Collections WHERE Id_User = " + parameters["user_id"] + ";");
+                            }
+                            else
+                            {
+                                pasOk = true;
+                            }
                         }
                         else
                         {
@@ -274,7 +293,7 @@ class Program
                         pasOk = true;
                     }
                     break;
-                case "/livre": // param : , livre_name, livre_id
+                case "/livre": // param : , livre_name, livre_id, collection_id
                     if (parameters.Count == 1)
                     {
                         string[] keys = parameters.AllKeys;
@@ -296,6 +315,11 @@ class Program
                         else if (keys[0] == "auteur_id")
                         {
                             data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Id_Auteur = " + parameters["auteur_id"] + ";");
+                            pasOk = false;
+                        }
+                        else if (keys[0] == "collection_id" && User_Id != -1)
+                        {
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres JOIN Collec ON Livres.Id = Collec.Id_Livre WHERE Collec.Id_Collection = " + parameters["collection_id"] + ";");
                             pasOk = false;
                         }
                         else
