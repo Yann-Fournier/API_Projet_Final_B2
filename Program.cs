@@ -331,6 +331,7 @@ class Program
                     {
                         pasOk = true;
                     }
+                    break;
                 default:
                     pasOk = true;
                     break;
