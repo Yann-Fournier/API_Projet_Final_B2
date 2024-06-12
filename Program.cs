@@ -126,7 +126,7 @@ class Program
                         }
                         else if (keys[0] == "auteur_name")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs WHERE Nom = '%" + parameters["auteur_name"] + "%';");
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Auteurs WHERE Nom LIKE '%" + parameters["auteur_name"] + "%';");
                             pasOk = false;
                         }
                         else if (keys[0] == "aleatoire")
@@ -189,7 +189,7 @@ class Program
                         }
                         else if (keys[0] == "user_name")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users WHERE Nom = '%" + parameters["user_name"] + "%';");
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Users WHERE Nom LIKE '%" + parameters["user_name"] + "%';");
                             pasOk = false;
                         }
                         else if (keys[0] == "aleatoire")
@@ -293,7 +293,7 @@ class Program
                         }
                         else if (keys[0] == "livre_name")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Nom = '%" + parameters["livre_name"] + "%';");
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Livres WHERE Nom LIKE '%" + parameters["livre_name"] + "%';");
                             pasOk = false;
                         }
                         else if (keys[0] == "aleatoire")
