@@ -238,20 +238,13 @@ class Program
                     }
                     else if (User_Id != -1)
                     {
-                        if (parameters.Count == 1)
+                        try
                         {
-                            string[] keys = parameters.AllKeys;
-                            if (keys[0] == "user_id")
-                            {
-                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Collections WHERE Id_User = " + parameters["user_id"] + ";");
-                            }
-                            else
-                            {
-                                pasOk = true;
-                            }
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Collections WHERE Id_User = " + User_Id + ";");
                         }
-                        else
+                        catch (Exception e)
                         {
+                            Console.WriteLine(e);
                             pasOk = true;
                         }
                     }
