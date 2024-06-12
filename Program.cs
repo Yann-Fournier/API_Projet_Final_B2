@@ -150,32 +150,28 @@ class Program
                     }
                     break;
                 case "/categorie": // param : , categorie_name, categorie_id
-                    if (Is_Admin)
+                    if (parameters.Count == 1)
                     {
-                        if (parameters.Count == 1)
+                        string[] keys = parameters.AllKeys;
+                        if (keys[0] == "categorie_id")
                         {
-                            string[] keys = parameters.AllKeys;
-                            if (keys[0] == "categorie_id")
-                            {
-                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories WHERE Id = " + parameters["categorie_id"] + ";");
-                            }
-                            else if (keys[0] == "categorie_name")
-                            {
-                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories WHERE Nom = '" + parameters["categorie_name"] + "';");
-                            }
-                            else
-                            {
-                                pasOk = true;
-                            }
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories WHERE Id = " + parameters["categorie_id"] + ";");
+                            pasOk = false;
                         }
-                        else if (parameters.Count == 0)
+                        else if (keys[0] == "categorie_name")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories;");
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories WHERE Nom = '" + parameters["categorie_name"] + "';");
+                            pasOk = false;
                         }
                         else
                         {
                             pasOk = true;
                         }
+                    }
+                    else if (parameters.Count == 0)
+                    {
+                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Categories;");
+                        pasOk = false;
                     }
                     else
                     {
@@ -241,7 +237,7 @@ class Program
                         }
                     }
                     else if (User_Id != -1)
-                    { 
+                    {
                         if (parameters.Count == 1)
                         {
                             string[] keys = parameters.AllKeys;
@@ -264,29 +260,29 @@ class Program
                         pasOk = true;
                     }
                     break;
-                case "/commentaire": // param : , commentaire_id
-                    if (Is_Admin)
+                case "/commentaire": // param : , commentaire_id, livre_id
+                    if (parameters.Count == 1)
                     {
-                        if (parameters.Count == 1)
+                        string[] keys = parameters.AllKeys;
+                        if (keys[0] == "com_id")
                         {
-                            string[] keys = parameters.AllKeys;
-                            if (keys[0] == "com_id")
-                            {
-                                data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Commentaires WHERE Id = " + parameters["commentaire_id"] + ";");
-                            }
-                            else
-                            {
-                                pasOk = true;
-                            }
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Commentaires WHERE Id = " + parameters["commentaire_id"] + ";");
+                            pasOk = false;
                         }
-                        else if (parameters.Count == 0)
+                        else if (keys[0] == "livre_id")
                         {
-                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Commentaires;");
+                            data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Commentaires WHERE Id_Livre = " + parameters["livre_id"] + ";");
+                            pasOk = false;
                         }
                         else
                         {
                             pasOk = true;
                         }
+                    }
+                    else if (parameters.Count == 0)
+                    {
+                        data = SQLRequest.ExecuteSelectQuery(connection, "SELECT * FROM Commentaires;");
+                        pasOk = false;
                     }
                     else
                     {
