@@ -49,6 +49,9 @@ class Program
 
         // Récupération du chemin et mise en forme
         string path = context.Request.Url.AbsolutePath.ToLower();
+        Console.Write("path");
+        Console.Write(" : ");
+        Console.WriteLine(path);
         if (path[path.Length - 1] == '/')
         {
             path = path.Substring(0, path.Length - 1);
@@ -468,22 +471,26 @@ class Program
                         try
                         {
                             // Création de l'utilisateur
-                            string query = "INSERT INTO Users (Email, Mdp, Photo, Nom, Is_Admin) VALUES ('" + parameters["email"] + "', '" + SQLRequest.HashPwd(parameters["mdp"]) + "', '" + parameters["photo"] + "', '" + parameters["nom"] + "', 0);";
+                            string query = "SELECT COUNT(*) as Count FROM Users";
+                            data = SQLRequest.ExecuteSelectQuery(connection, query);
+                            query = "INSERT INTO Users (Id, Email, Mdp, Photo, Nom, Is_Admin) VALUES (" + Int32.Parse(data[0]["Count"].ToString()) + ", '" + parameters["email"] + "', '" + SQLRequest.HashPwd(parameters["mdp"]) + "', '" + parameters["photo"] + "', '" + parameters["nom"] + "', 0);";
                             SQLRequest.ExecuteOtherQuery(connection, query);
                             query = "SELECT Id FROM Users WHERE Mdp = '" + SQLRequest.HashPwd(parameters["mdp"]) + "' AND Email = '" + parameters["email"] + "';";
                             dynamic id = SQLRequest.ExecuteSelectQuery(connection, query);
                             // Insertion des collection
-                            query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES (" + id[0]["Id"] + ", 'J&#39ai', 1);";
+                            query = "SELECT COUNT(*) as Count FROM Collections";
+                            data = SQLRequest.ExecuteSelectQuery(connection, query);
+                            query = "INSERT INTO Collections (Id, Id_User, Nom, Is_Private) VALUES (" + data[0]["Count"].ToString() + ", " + id[0]["Id"] + ", 'J&#39ai', 1);";
                             SQLRequest.ExecuteOtherQuery(connection, query);
-                            query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES(" + id[0]["Id"] + ", 'Ma pile à lire', 1);";
+                            query = "INSERT INTO Collections (Id, Id_User, Nom, Is_Private) VALUES(" + (Int32.Parse(data[0]["Count"].ToString()) + 1)  + ", " + id[0]["Id"] + ", 'Ma pile à lire', 1);";
                             SQLRequest.ExecuteOtherQuery(connection, query);
-                            query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES(" + id[0]["Id"] + ", 'Je lis', 1);";
+                            query = "INSERT INTO Collections (Id, Id_User, Nom, Is_Private) VALUES(" + (Int32.Parse(data[0]["Count"].ToString()) + 2)  + ", " + id[0]["Id"] + ", 'Je lis', 1);";
                             SQLRequest.ExecuteOtherQuery(connection, query);
-                            query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES(" + id[0]["Id"] + ", 'J&#39ai lu', 1);";
+                            query = "INSERT INTO Collections (Id, Id_User, Nom, Is_Private) VALUES(" + (Int32.Parse(data[0]["Count"].ToString()) + 3)  + ", " + id[0]["Id"] + ", 'J&#39ai lu', 1);";
                             SQLRequest.ExecuteOtherQuery(connection, query);
-                            query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES(" + id[0]["Id"] + ", 'J&#39aime', 1);";
+                            query = "INSERT INTO Collections (Id, Id_User, Nom, Is_Private) VALUES(" + (Int32.Parse(data[0]["Count"].ToString()) + 4)  + ", " + id[0]["Id"] + ", 'J&#39aime', 1);";
                             SQLRequest.ExecuteOtherQuery(connection, query);
-                            query = "INSERT INTO Collections (Id_User, Nom, Is_Private) VALUES(" + id[0]["Id"] + ", 'Ma liste de souhait', 1);";
+                            query = "INSERT INTO Collections (Id, Id_User, Nom, Is_Private) VALUES(" + (Int32.Parse(data[0]["Count"].ToString()) + 5)  + ", " + id[0]["Id"] + ", 'Ma liste de souhait', 1);";
                             SQLRequest.ExecuteOtherQuery(connection, query);
                             // Création du token
                             query = "INSERT INTO Auth (Id, Token) VALUES(" + id[0]["Id"] + ", '" + SQLRequest.HashPwd(parameters["nom"]) + "');";
